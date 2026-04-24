@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Glam Luxury Website Prompt Generator</title>
+<style>
+  :root{
+    --bg1:#08070e; --bg2:#171126; --panel:rgba(18,16,30,.84); --line:rgba(255,255,255,.11);
+    --text:#f8f5ff; --muted:#d7d0ea; --pink:#ff3ca7; --violet:#8f5fff; --cyan:#19ffd7;
+    --gold:#ffd86f; --red:#ff5248; --shadow:0 16px 38px rgba(0,0,0,.34);
+    --glow:0 0 0 1px rgba(255,255,255,.08), 0 0 24px rgba(255,60,167,.16), 0 0 40px rgba(25,255,215,.10);
+    --radius:20px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--text); font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:
+      radial-gradient(circle at 14% 18%, rgba(255,60,167,.24), transparent 18%),
+      radial-gradient(circle at 86% 14%, rgba(25,255,215,.16), transparent 14%),
+      radial-gradient(circle at 74% 78%, rgba(255,216,111,.10), transparent 16%),
+      linear-gradient(140deg,#09080f 0%, #131022 28%, #230d30 60%, #0c1121 100%);
+    min-height:100vh; overflow-x:hidden;
+  }
+  .floating-bg{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden}
+  .floaty,.ring,.spark{position:absolute; border-radius:999px; opacity:.55; animation:rise linear infinite}
+  .floaty{background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.85), rgba(255,60,167,.22) 20%, rgba(143,95,255,.13) 58%, transparent 74%)}
+  .ring{border:1px solid rgba(255,255,255,.16); box-shadow:0 0 18px rgba(25,255,215,.12), inset 0 0 18px rgba(255,255,255,.04)}
+  .spark{width:8px;height:8px;background:linear-gradient(135deg,var(--gold),var(--pink)); box-shadow:0 0 18px rgba(255,216,111,.48), 0 0 28px rgba(255,60,167,.30)}
+  @keyframes rise{from{transform:translateY(110vh) rotate(0deg)}to{transform:translateY(-18vh) rotate(360deg)}}
+  .wrap{position:relative; z-index:1; width:min(1480px,94vw); margin:24px auto 84px}
+  .hero{background:linear-gradient(135deg, rgba(255,60,167,.18), rgba(143,95,255,.16) 35%, rgba(25,255,215,.08) 100%); border:1px solid rgba(255,255,255,.12); border-radius:30px; padding:24px 22px 18px; position:relative; overflow:hidden; box-shadow:var(--glow)}
+  .hero:before{content:""; position:absolute; inset:-2px; background:linear-gradient(90deg, rgba(255,60,167,.30), rgba(255,216,111,.16), rgba(25,255,215,.20), rgba(143,95,255,.32)); filter:blur(28px); opacity:.48; z-index:-1}
+  h1{margin:0; font-size:clamp(2.1rem,4vw,4.2rem); text-transform:uppercase; line-height:1; font-weight:900; letter-spacing:.05em}
+  .sub{margin-top:10px; max-width:1100px; color:var(--muted); font-size:1rem; line-height:1.45}
+  .marquee{margin-top:18px; overflow:hidden; border-radius:999px; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.05); box-shadow:var(--shadow), inset 0 0 18px rgba(255,255,255,.03)}
+  .marquee span{display:inline-block; white-space:nowrap; padding:12px 0; font-weight:900; text-transform:uppercase; letter-spacing:.08em; animation:mar 20s linear infinite}
+  @keyframes mar{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  .hero-grid{display:grid; grid-template-columns:1fr; gap:18px; margin-top:20px}
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); backdrop-filter:blur(12px)}
+  .analysis{padding:18px}
+  .section-title{margin:0 0 12px; font-size:1.05rem; text-transform:uppercase; letter-spacing:.08em}
+  .analysis-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+  .mini{padding:12px; border-radius:16px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08)}
+  .mini .k{font-size:.72rem; color:#ffd9ef; text-transform:uppercase; letter-spacing:.08em}
+  .mini .v{margin-top:6px; line-height:1.36; font-size:.95rem}
+  .thumbs{padding:18px; display:grid; grid-template-columns:repeat(2,1fr); gap:12px; align-content:start}
+  .thumb{border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.10); aspect-ratio:1/1.18; position:relative; display:flex; align-items:flex-end; padding:10px}
+  .thumb:nth-child(1){background:linear-gradient(135deg,#fd4ea8,#872dff 60%,#1df0d0)}
+  .thumb:nth-child(2){background:linear-gradient(135deg,#a787ff,#f3b8d7 60%,#6effd8)}
+  .thumb:nth-child(3){background:linear-gradient(135deg,#f5f0e7,#111 70%,#d7b58a)}
+  .thumb:nth-child(4){background:linear-gradient(135deg,#100f14,#e00000 62%,#ffffff)}
+  .thumb b{display:block; width:100%; padding:6px 8px; border-radius:10px; background:rgba(0,0,0,.45); font-size:.78rem}
+  .content{display:grid; grid-template-columns:430px minmax(0,1fr); gap:18px; margin-top:18px}
+  .sidebar,.main{display:flex; flex-direction:column; gap:18px}
+  .header-row{padding:16px 18px; border-bottom:1px solid var(--line)}
+  .note{font-size:.85rem; color:#d7d0ea; line-height:1.45; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04)}
+  .preset-wrap{padding:16px 18px}
+  .preset-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; max-height:320px; overflow:auto; padding-right:5px}
+  .preset-btn,.action-btn,.copy-btn,.tiny-btn,.mode-btn{border:none; cursor:pointer; color:white; font-family:inherit; font-weight:800; border-radius:14px; transition:.2s ease}
+  .preset-btn{padding:10px 12px; text-align:left; background:linear-gradient(135deg, rgba(255,60,167,.22), rgba(143,95,255,.18)); border:1px solid rgba(255,255,255,.10)}
+  .preset-btn:hover,.action-btn:hover,.copy-btn:hover,.tiny-btn:hover,.mode-btn:hover{transform:translateY(-1px)}
+  .actions{padding:16px 18px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; border-top:1px solid var(--line)}
+  .action-btn{padding:12px 14px; background:linear-gradient(135deg,var(--pink),var(--red)); box-shadow:0 8px 22px rgba(255,82,72,.20)}
+  .action-btn.alt{background:linear-gradient(135deg,var(--violet),#5f74ff)}
+  .action-btn.green{background:linear-gradient(135deg,#00b894,#1fd6a7)}
+  .action-btn.dark{background:linear-gradient(135deg,#2d2843,#10111a)}
+  .action-btn.gold{background:linear-gradient(135deg,#ad7f00,#ffd86f); color:#241700}
+  .category-list{padding:14px 14px 20px}
+  details.category{margin-bottom:12px; border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.04); box-shadow:0 0 16px rgba(255,60,167,.08)}
+  details.category[open]{box-shadow:0 0 18px rgba(25,255,215,.07), 0 0 22px rgba(255,60,167,.08)}
+  summary{list-style:none; cursor:pointer; padding:14px; display:flex; align-items:center; justify-content:space-between; gap:10px; font-weight:900; letter-spacing:.04em}
+  summary::-webkit-details-marker{display:none}
+  .sum-left{display:flex; align-items:center; gap:10px}
+  .tag{display:inline-flex; align-items:center; justify-content:center; min-width:28px; height:28px; padding:0 8px; border-radius:999px; background:linear-gradient(135deg, rgba(255,60,167,.24), rgba(25,255,215,.18)); font-size:.78rem}
+  .cat-body{padding:0 14px 14px}
+  .cat-actions{display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap}
+  .tiny-btn{padding:7px 10px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.10); font-size:.78rem}
+  .tiny-btn.locked{background:linear-gradient(135deg, rgba(255,216,111,.28), rgba(255,60,167,.24))}
+  .field{display:flex; flex-direction:column; gap:8px}
+  .field label{font-size:.82rem; color:#e7ddfe; text-transform:uppercase; letter-spacing:.08em}
+  select,input[type="text"],textarea{width:100%; padding:12px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.22); color:#fff; font:inherit; outline:none}
+  select[multiple]{min-height:128px}
+  textarea{min-height:110px; resize:vertical}
+  .output-panel{padding:18px}
+  .outbox{min-height:220px; border-radius:18px; padding:14px; border:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.25); white-space:pre-wrap; line-height:1.55}
+  .copy-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+  .copy-btn,.mode-btn{padding:10px 12px; background:linear-gradient(135deg,#30324b,#12131b); border:1px solid rgba(255,255,255,.12)}
+  .mode-btn.active{background:linear-gradient(135deg,var(--pink),var(--violet))}
+  .variations-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px}
+  .variations-grid .panel{padding:16px}
+  .small-out{min-height:130px}
+  .history-list{display:flex; flex-direction:column; gap:10px; max-height:280px; overflow:auto}
+  .history-item{padding:12px; border-radius:14px; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.04)}
+  .footer{text-align:center; padding:20px; margin-top:18px; color:#fff; opacity:.86; text-transform:lowercase; letter-spacing:.06em}
+  .side-scroll{position:fixed; right:18px; bottom:18px; z-index:8; display:flex; flex-direction:column; gap:10px}
+  .side-scroll button{width:58px; height:58px; border:none; border-radius:999px; cursor:pointer; color:#fff; font-size:1.2rem; font-weight:900; background:linear-gradient(135deg,var(--pink),var(--violet)); box-shadow:0 0 20px rgba(255,60,167,.42),0 0 42px rgba(25,255,215,.18)}
+  @media (max-width:1100px){.hero-grid,.content,.variations-grid{grid-template-columns:1fr}}
+  @media (max-width:780px){.analysis-grid,.preset-grid,.actions{grid-template-columns:1fr}.thumbs{grid-template-columns:1fr}.side-scroll{right:10px}}
+</style>
+</head>
+<body>
+<div class="floating-bg" id="floatingBg"></div>
+<div class="wrap">
+  <section class="hero">
+    <h1>Glam Luxury Website Prompt Generator</h1>
+    <div class="sub">This version builds prompts for any AI website builder or website creation platform. It does not generate image prompts. It generates builder-ready website prompts for full websites, sales pages, and landing pages, and now includes custom marquee text, custom image instructions, brand name, button text, section heading controls, logo instructions, footer text, social links, contact info fields, color hex fields, exact contact text, exact footer text, exact headlines, exact subheadings, exact CTA button text, exact section content fields for about text, service descriptions, testimonial text, FAQ content, pricing text, offer/package names, exact brand story, exact benefits bullets, exact form placeholder text, exact nav menu text, exact announcement bar text variants, exact testimonial name/title fields, exact social handle fields, exact business hours, exact policy/disclaimer text, exact email signup text, exact pricing package breakdown, exact contact form labels, exact trust badge text, exact feature card text, exact final CTA section text, exact popup text, exact countdown text, and exact thank-you message text.</div>
+    <div class="marquee"><span>✨Scroll-Stopping Content  • Premium Images • Because We’re Not Here to Look Broke ✨ &nbsp;&nbsp;&nbsp; ✨Scroll-Stopping Content  • Premium Images • Because We’re Not Here to Look Broke ✨ &nbsp;&nbsp;&nbsp;</span></div>
+    <div class="hero-grid">
+    </div>
+  </section>
+
+  <section class="content">
+    <aside class="sidebar">
+      <div class="panel">
+        <div class="header-row">
+          <div class="section-title">Mode + Presets</div>
+          <div class="note">Use Full Website for general sites. Use Landing Page for sales-focused pages. Both modes stay builder-ready.</div>
+          <div class="copy-row" style="margin-top:12px">
+            <button class="mode-btn active" id="modeWebsiteBtn">Full Website</button>
+            <button class="mode-btn" id="modeLandingBtn">Landing Page</button>
+          </div>
+        </div>
+        <div class="preset-wrap"><div class="preset-grid" id="presetGrid"></div></div>
+        <div class="actions">
+          <button class="action-btn" id="generateBtn">Generate</button>
+          <button class="action-btn alt" id="randomBtn">Random</button>
+          <button class="action-btn dark" id="clearBtn">Clear All</button>
+          <button class="action-btn green" id="saveBtn">Save Prompt</button>
+          <button class="action-btn gold" id="copyMainBtn">Copy</button>
+          <button class="action-btn alt" id="variationsBtn">3 More Variations</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="header-row"><div class="section-title">Generator Categories</div></div>
+        <div class="category-list" id="categoryList"></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="panel output-panel">
+        <div class="section-title">Website Builder Prompt</div>
+        <div class="outbox" id="mainOutput"></div>
+        <div class="copy-row"><button class="copy-btn" data-copy-target="mainOutput">Copy Builder Prompt</button></div>
+      </div>
+
+      <div class="panel output-panel">
+        <div class="section-title">Short Version Prompt</div>
+        <div class="outbox" id="shortOutput"></div>
+        <div class="copy-row"><button class="copy-btn" data-copy-target="shortOutput">Copy Short Prompt</button></div>
+      </div>
+
+      <div class="panel output-panel">
+        <div class="section-title">3 More Variations</div>
+        <div class="variations-grid">
+          <div class="panel"><div class="outbox small-out" id="variation1"></div><div class="copy-row"><button class="copy-btn" data-copy-target="variation1">Copy Variation 1</button></div></div>
+          <div class="panel"><div class="outbox small-out" id="variation2"></div><div class="copy-row"><button class="copy-btn" data-copy-target="variation2">Copy Variation 2</button></div></div>
+          <div class="panel"><div class="outbox small-out" id="variation3"></div><div class="copy-row"><button class="copy-btn" data-copy-target="variation3">Copy Variation 3</button></div></div>
+          <div class="panel"><div class="note">Variations keep the same core site direction but switch structure, style, and conversion flavor so you can test different website builds across your favorite AI website builders fast.</div></div>
+        </div>
+      </div>
+
+      <div class="panel output-panel">
+        <details open>
+          <summary><span class="section-title">Prompt History</span><span class="tag">Saved</span></summary>
+          <div class="history-list" id="historyList"></div>
+        </details>
+      </div>
+    </main>
+  </section>
+
+  <div class="footer">all rights reserved by glamorousgrammyglowup</div>
+</div>
+
+<div class="side-scroll">
+  <button id="scrollTopBtn">↑</button>
+  <button id="scrollBottomBtn">↓</button>
+</div>
+
+<script>
+const data = {
+  presets: [
+    'Agency Service Website','Beauty Brand Website','Bold Website Designer Site','Business Coach Landing Page','Course Sales Website',
+    'Creative Portfolio Site','Digital Product Shop','Fashion Brand Website','Feminine Founder Website','Hair Brand Landing Page',
+    'High-End Membership Website','Luxury Service Website','Marketing Agency Homepage','Modern SaaS Landing Page','Personal Brand Website',
+    'Pink Sales Page','Premium E-Commerce Site','Product Launch Landing Page','Service-Based Business Site','Template Shop Website',
+    'Website Designer Landing Page','Women-Led Brand Website','Workshop Sales Page','Creator Brand Website','Bold Promo Landing Page'
+  ],
+  categories: [
+    {key:'websiteType', label:'Website Type', multi:true, options:['None','Agency website','Beauty brand website','Boutique storefront','Branding studio website','Business coach website','Course website','Creative portfolio website','Digital product shop','E-commerce website','Fashion brand website','Hair brand website','Membership website','Personal brand website','Product launch website','SaaS website','Service-based business website','Template shop website','Website designer website','Workshop website']},
+    {key:'brandFocus', label:'Brand Focus', multi:true, options:['None','Agency services','Beauty business','Brand strategist','Business coach','Content creator brand','Course creator','Creative studio','Digital products','E-commerce brand','Fashion accessories','Founder brand','Hair brand','Luxury services','Marketing agency','Membership community','Modern portfolio','Personal brand','Service provider','Website designer']},
+    {key:'pageGoal', label:'Primary Goal', multi:true, options:['None','Book consultations','Build trust','Collect leads','Drive course sales','Drive product sales','Grow email list','Highlight services','Launch a brand','Promote a membership','Sell a digital product','Showcase a portfolio']},
+    {key:'pageType', label:'Page Type', multi:true, options:['None','Full multi-section website','Homepage-focused website','Landing page','Lead generation page','Membership sales page','Personal brand site','Product launch page','Sales page','Service website','Single-page website','Workshop sales page']},
+    {key:'layoutStyle', label:'Layout Style', multi:true, options:['None','Asymmetrical layout','Bold hero plus stacked sections','Centered clean layout','Conversion-focused sales layout','Editorial split layout','Grid-based layout','Luxury modular layout','Minimal modern layout','Multi-panel premium layout','Soft feminine layout','Strong visual hierarchy layout']},
+    {key:'heroSection', label:'Hero Section Style', multi:true, options:['None','Big headline with CTA','Bold founder intro','Clean product hero','Conversion-heavy sales hero','Minimal hero with button','Offer-driven hero section','Split hero with image area','Statement hero with trust badges','Text-first hero section','Value-driven hero section']},
+    {key:'navigationStyle', label:'Navigation Style', multi:true, options:['None','Centered navigation','Clean top nav','Compact top nav','Minimal sticky nav','Modern sticky nav','Simple header nav','Split logo navigation','Thin elegant nav']},
+    {key:'sectionBlocks', label:'Section Blocks', multi:true, options:['None','About section','Before-and-after section','Blog preview','CTA strip','Contact section','FAQ section','Feature cards','Founder story','Gallery section','How it works section','Instagram strip','Offer section','Portfolio section','Pricing section','Product grid','Service cards','Social proof section','Testimonial section','Waitlist section']},
+    {key:'ctaStyle', label:'CTA Style', multi:true, options:['None','Bold gradient CTA','Clean boxed CTA','Dark luxury CTA','Glossy rounded CTA','Large sales CTA','Minimal outline CTA','Premium button CTA','Soft feminine CTA','Urgency CTA']},
+    {key:'colorPalette', label:'Color Palette', multi:true, options:['None','Black and crimson','Black and gold','Black and ivory','Black and neon aqua','Blush and white','Coral and magenta','Cream and rose','Electric pink and orange','Hot pink and black','Hot pink and white','Lavender and mint','Lavender and turquoise','Magenta and orange','Mauve and gray','Monochrome black','Pink and champagne','Pink and gold','Purple and aqua','Red and white','Rose gold and ivory','Soft pink and tan','Sunset ombré']},
+    {key:'fontStyle', label:'Font Style', multi:true, options:['None','Bold all-caps sans','Bold geometric headline','Bold luxury serif','Clean editorial sans','Condensed power headline','Designer script accent','Elegant serif mix','Fashion-mag serif','High-contrast serif','Luxury branding sans','Minimal modern serif','Rounded modern sans','Soft feminine sans','Wide tracking uppercase']},
+    {key:'brandMood', label:'Brand Mood', multi:true, options:['None','Bold and strategic','Clean and elevated','Confident and modern','Elegant and minimal','Expensive and polished','Feminine and luxe','Friendly and clear','High-end and stylish','Playful and premium','Soft and welcoming','Statement-making and bold']},
+    {key:'designFeatures', label:'Design Features', multi:true, options:['None','Animated counters','Card hover effects','Collapsible FAQ','Gradient buttons','Luxury section dividers','Mobile-first structure','Newsletter sign-up','Parallax section feel','Rounded cards','Scroll reveal animations','Sticky CTA','Sticky navigation','Testimonial slider','Trust badges','Video section']},
+    {key:'functionality', label:'Functionality', multi:true, options:['None','Booking form','Contact form','Email signup','FAQ accordion','Featured products section','Footer with socials','Inquiry form','Integrated testimonials','Lead magnet signup','Pricing cards','Product showcase','Service inquiry flow','Shop section','Sticky nav','Waitlist form']},
+    {key:'mobileBehavior', label:'Mobile Behavior', multi:true, options:['None','Keep clear spacing on mobile','Make buttons large on mobile','Make navigation collapse cleanly','Optimize every section for phones first','Stack sections neatly on mobile','Use mobile-first responsiveness']},
+    {key:'visualDirection', label:'Visual Direction', multi:true, options:['None','Bold premium brand feel','Clean polished website feel','Glossy feminine brand feel','High-end modern website feel','Luxury editorial website feel','Minimal conversion-focused feel','Premium beauty-brand feel','Strong sales-page feel','Website that feels expensive']},
+    {key:'contentTone', label:'Content Tone', multi:true, options:['None','Bold and persuasive','Clear and professional','Confident and welcoming','Elegant and aspirational','Friendly and direct','Luxury and polished','Sales-focused and punchy','Soft and feminine','Strategic and conversion-driven']},
+    {key:'imageUsage', label:'Image Usage', multi:true, options:['None','About section image','Editable brand banner image','Editable gallery images','Editable hero background image','Editable hero side image','Editable lifestyle images','Editable product images','Editable promotional image cards','Editable testimonial images','Full-width banner image']},
+    {key:'imageStyle', label:'Image Style', multi:true, options:['None','Beauty campaign','Bold modern','Clean studio','Editorial','Lifestyle','Luxury','Minimal polished','Product photography','Soft feminine']},
+    {key:'imagePlacement', label:'Image Placement', multi:true, options:['None','Background section','Centered','Full-width section','Left of text','Overlapping layout','Right of text','Split screen','Staggered gallery']},
+    {key:'imageShape', label:'Image Shape', multi:true, options:['None','Circular','Collage stack','Full-width image','Layered cards','Mockup frame','Portrait frame','Rounded corners','Square']},
+    {key:'imageEditability', label:'Image Editability', multi:true, options:['None','All image blocks should be editable','Image cards should be reusable','Images should be easy to swap later','Keep gallery sections easy to update','Make hero images replaceable','Make product images editable','Use clearly labeled image sections']},
+    {key:'marqueeType', label:'Marquee Type', multi:true, options:['None','Luxury moving headline','Scrolling announcement bar','Ticker-style text strip','Top promo bar']},
+    {key:'marqueePlacement', label:'Marquee Placement', multi:true, options:['None','Above hero','Above navigation','Below navigation','Inside hero section']},
+    {key:'marqueeContent', label:'Marquee Content Style', multi:true, options:['None','Brand statement','Product highlights','Promo message','Rotating benefits','Sale announcement']},
+    {key:'marqueeBehavior', label:'Marquee Behavior', multi:true, options:['None','Auto-scroll left','Auto-scroll right','Loop infinitely','Pause on hover','Smooth motion']},
+    {key:'marqueeEditability', label:'Marquee Editability', multi:true, options:['None','Keep content in one editable block','Make marquee text easy to change later','Marquee text should be editable']},
+    {key:'customMarqueeText', label:'Custom Marquee Text', multi:false, options:['None','Luxury Generator Bundle • Instant Download • Premium Images','Book Your Website Glow-Up Today','Premium Branding for Women Who Mean Business','Scroll-Stopping Design • Premium Branding • High-Converting Websites']},
+    {key:'customImageInstructions', label:'Custom Image Instructions', multi:false, options:['None','Add 3 editable product images in the shop section','Add editable founder images in the about section','Add editable mockup images in the portfolio area','Use a luxury beauty image in the hero','Use editable gallery images across the site']},
+    {key:'brandName', label:'Brand Name', multi:false, options:['None','GlamorousGrammyGlowUp','Your Brand Name Here','Luxury Glow Studio','Pink Luxe Agency','The Beauty Brand','The Website Glow-Up Studio']},
+    {key:'buttonText', label:'Button Text', multi:true, options:['None','Book Now','Book Your Glow-Up','Contact Us','Get Started','Grab the Offer','Join Now','Learn More','Shop Now','Start Your Project']},
+    {key:'sectionHeadings', label:'Section Headings', multi:true, options:['None','About Us','Client Results','Featured Products','How It Works','Meet the Founder','Our Services','Portfolio','Pricing','Shop the Collection','Testimonials','Why Choose Us']},
+    {key:'logoInstructions', label:'Logo Instructions', multi:true, options:['None','Add a clean text logo','Add a feminine luxury logo style','Add a logo area that is easy to replace later','Use a bold modern wordmark','Use a gold-accent luxury logo treatment','Use a simple premium logo placeholder']},
+    {key:'footerText', label:'Footer Text', multi:true, options:['None','Add a clean copyright line','Add a branded luxury footer note','Add policy links in the footer','Add a short brand statement in the footer','Use all rights reserved in the footer','Use an editable footer text block']},
+    {key:'socialLinks', label:'Social Links', multi:true, options:['None','Add Facebook link area','Add Instagram link area','Add LinkedIn link area','Add Pinterest link area','Add TikTok link area','Add YouTube link area','Make social icons editable']},
+    {key:'contactInfo', label:'Contact Info Fields', multi:true, options:['None','Add business email field','Add contact form details','Add phone number area','Add service inquiry section','Add website URL field','Make contact details editable','Show contact info in footer']},
+    {key:'colorHex', label:'Color Hex Fields', multi:true, options:['None','#000000','#111111','#ffffff','#ff3ca7','#ffd700','#8f5fff','#19ffd7','#ff5248','#f8d7da','#f5f0e7','#d4af37']},
+    {key:'exactContactText', label:'Exact Contact Text', multi:false, options:['None','Email us at hello@yourbrand.com','Book your project consultation today','Contact us for custom design pricing','DM us on Instagram for questions','Phone: (555) 555-5555 • Email: hello@yourbrand.com']},
+    {key:'exactFooterText', label:'Exact Footer Text', multi:false, options:['None','all rights reserved by glamorousgrammyglowup','Copyright © Your Brand. All rights reserved.','Designed for women who mean business.','Luxury branding that converts.']},
+    {key:'exactHeadline', label:'Exact Headline Field', multi:false, options:['None','Build the Brand That Looks as Expensive as You Are','Luxury Websites for Women Who Mean Business','Your Website Glow-Up Starts Here','Bold Branding. Beautiful Websites. Better Conversions.','Scroll-Stopping Websites That Sell']},
+    {key:'exactSubheading', label:'Exact Subheading Field', multi:false, options:['None','Create a premium online presence that feels polished, strategic, and built to convert.','Designed to help your brand stand out, attract the right people, and look worth every dollar.','A bold, feminine, high-end website experience built for visibility and sales.','Give your business a website that feels modern, luxe, and impossible to ignore.']},
+    {key:'exactCTAButton', label:'Exact CTA Button Field', multi:false, options:['None','Book Your Glow-Up','Get Started Today','Shop the Collection','Start Your Project','Work With Me']},
+    {key:'aboutText', label:'Exact About Text', multi:false, options:['None','We create premium websites for women-led brands that want to look polished, strategic, and high-converting.','Our brand is built on bold visuals, strong messaging, and luxury presentation that helps your business stand out online.','We help service providers and digital brands turn basic websites into scroll-stopping experiences that build trust and drive action.']},
+    {key:'serviceDescriptions', label:'Exact Service Descriptions', multi:false, options:['None','Custom website design, landing page creation, brand styling, and conversion-focused layout strategy.','Website redesigns, premium branding visuals, mobile-friendly layouts, and polished sales-driven page structure.','Luxury web design for service providers, creators, and digital product brands who want beauty and strategy in one place.']},
+    {key:'testimonialText', label:'Exact Testimonial Text', multi:false, options:['None','This website finally looks like my price point and makes my brand feel premium.','My new site looks polished, professional, and so much easier for my audience to trust.','The design is beautiful, clear, and way more aligned with the kind of clients I want to attract.']},
+    {key:'faqContent', label:'Exact FAQ Questions and Answers', multi:false, options:['None','FAQ 1: How long does the process take? Answer: Timelines vary, but most projects are completed within a few weeks. FAQ 2: Do you offer revisions? Answer: Yes, revisions are included so the final result feels aligned with your vision.','FAQ 1: Is this mobile-friendly? Answer: Yes, the website is designed to look polished on desktop and mobile. FAQ 2: Can I update the content later? Answer: Yes, the layout is built to stay editable and easy to maintain.','FAQ 1: Do you work with beginners? Answer: Yes, we create clear, easy-to-manage websites for brands at every stage. FAQ 2: What do you need from me? Answer: Brand details, content, images, and your overall direction.']},
+    {key:'pricingText', label:'Exact Pricing Text', multi:false, options:['None','Starting at $497 for premium website design.','Packages start at $997 depending on project scope and features.','Custom pricing available based on your goals, content, and website needs.','Investment details are shared after your discovery call so your quote matches your needs.']},
+    {key:'offerNames', label:'Exact Offer or Package Names', multi:false, options:['None','The Website Glow-Up','Luxury Launch Package','Premium Brand Build','The Signature Site Experience','VIP Website Makeover']},
+    {key:'brandStory', label:'Exact Brand Story Field', multi:false, options:['None','Our brand was created to help women-led businesses show up online with confidence, clarity, and premium presentation.','We believe your website should reflect your value, tell your story, and make people trust your brand the moment they land on the page.','This brand was built for bold entrepreneurs who want beauty, strategy, and conversion all in one online experience.']},
+    {key:'benefitsBullets', label:'Exact Benefits or Bullets Field', multi:false, options:['None','Premium design • Mobile-friendly layout • Easy-to-edit content • Conversion-focused structure','Bold branding • Strategic layout • Luxury presentation • Clear calls to action','Polished website experience • Strong trust-building sections • Editable images • Sales-driven design']},
+    {key:'formPlaceholderText', label:'Exact Form Placeholder Text', multi:false, options:['None','Name, Email, Tell Me About Your Project','Enter your name, enter your email, and tell us what you need','Your name, best email, and a quick note about your goals','Tell us what you want help with and how to reach you']},
+    {key:'navMenuText', label:'Exact Nav Menu Text', multi:false, options:['None','Home • About • Services • Portfolio • Testimonials • Contact','Home • Shop • About • FAQ • Contact','Home • Work With Me • Services • Results • Contact','Home • Offer • About • Pricing • FAQ • Contact']},
+    {key:'announcementBarVariants', label:'Exact Announcement Bar Text Variants', multi:false, options:['None','Luxury Generator Bundle • Instant Download • Premium Images','Book Your Website Glow-Up • Premium Design • High-Converting Layouts','Bold Branding • Beautiful Websites • Built to Convert','Premium Websites • Editable Content • Mobile-First Design']},
+    {key:'testimonialNameTitle', label:'Exact Testimonial Name and Title Fields', multi:false, options:['None','Jasmine Carter — Beauty Brand Owner','Monique Davis — Digital Product Creator','Tanya Brooks — Business Coach','Erica Smith — Founder and CEO']},
+    {key:'socialHandles', label:'Exact Social Handle Fields', multi:false, options:['None','Instagram: @yourbrand • TikTok: @yourbrand • YouTube: @yourbrand','Instagram: @glamorousgrammyglowup • TikTok: @glamorousgrammyglowup','Instagram: @yourbrandname • Pinterest: @yourbrandname','TikTok: @yourbrand • Facebook: Your Brand Name']},
+    {key:'businessHours', label:'Exact Business Hours Field', multi:false, options:['None','Monday–Friday 9 AM–5 PM','Monday–Thursday 10 AM–6 PM • Friday 10 AM–2 PM','By appointment only','Support Hours: Monday–Friday 8 AM–4 PM']},
+    {key:'policyDisclaimer', label:'Exact Policy or Disclaimer Text', multi:false, options:['None','All sales are final on digital products.','Results may vary based on your business, content, and consistency.','By using this website, you agree to our terms, policies, and privacy practices.','Please allow 1–2 business days for responses to inquiries.']},
+    {key:'emailSignupText', label:'Exact Email Signup Text', multi:false, options:['None','Sign up to get premium updates, offers, and website tips.','Join the list for exclusive launches, freebies, and brand glow-up tips.','Get updates, special offers, and premium content straight to your inbox.','Subscribe for launch news, digital resources, and business tips.']},
+    {key:'pricingBreakdown', label:'Exact Pricing Package Breakdown', multi:false, options:['None','Starter Package: Homepage design only. Signature Package: Multi-section website. VIP Package: Full premium custom website experience.','Package 1: Basic website refresh. Package 2: Premium redesign. Package 3: Full luxury website build with strategy.','Starter: Landing page. Growth: Full website. VIP: Website plus premium branding support.']},
+    {key:'contactFormLabels', label:'Exact Contact Form Labels', multi:false, options:['None','Name • Email • Project Details','Full Name • Email Address • Business Name • What You Need Help With','Name • Email • Website Needs • Budget','Your Name • Your Email • Tell Me About Your Project']},
+    {key:'trustBadgeText', label:'Exact Trust Badge Text', multi:false, options:['None','Trusted by bold women-led brands','Premium design • Strategic layout • Mobile ready','Luxury presentation • Clear messaging • Built to convert','Editable content • Premium structure • High-end feel']},
+    {key:'featureCardText', label:'Exact Feature Card Text', multi:false, options:['None','Premium design, mobile-friendly layout, easy editing, and conversion-focused structure.','Beautiful branding, strategic sections, strong CTA placement, and polished presentation.','Luxury website visuals, responsive layout, editable content blocks, and trust-building design.']},
+    {key:'finalCTASectionText', label:'Exact Final CTA Section Text', multi:false, options:['None','Ready for a website that finally matches your value? Let’s build it.','Your brand deserves more than basic. Book your glow-up today.','Let’s turn your vision into a polished, premium website experience.','Start your project today and build a site that looks as good as your offer feels.']},
+    {key:'popupText', label:'Exact Popup Text', multi:false, options:['None','Wait — before you go, grab your premium freebie.','Want a website that looks as good as your offer? Let’s talk.','Get exclusive updates, offers, and digital goodies before you leave.','Join now and get first access to premium launches and resources.']},
+    {key:'countdownText', label:'Exact Countdown Text', multi:false, options:['None','Offer ends soon — don’t miss your spot.','Limited-time launch pricing ends in:','Enrollment closes in:','This premium offer expires in:']},
+    {key:'thankYouMessage', label:'Exact Thank-You Message Text', multi:false, options:['None','Thank you for reaching out — we’ll be in touch soon.','You’re in! Check your inbox for the next steps.','Thanks for joining — your premium update is on the way.','Your message has been received. We’ll follow up shortly.']},
+    {key:'checkoutMessage', label:'Exact Cart / Checkout Message Text', multi:false, options:['None','You’re one step away from your premium upgrade.','Secure your purchase and start your glow-up today.','Complete your checkout to unlock instant access.','Finish your order and get immediate access to your digital product.']},
+    {key:'errorMessage', label:'Exact Error / Validation Message Text', multi:false, options:['None','Please fill out all required fields.','Something went wrong. Please try again.','Invalid input — please check your entries.','Oops, that didn’t work. Double-check your info and try again.']},
+    {key:'emptyStateText', label:'Exact Empty State Text', multi:false, options:['None','Nothing here yet — let’s build something beautiful.','No content yet. Start creating your premium experience.','This space is waiting for your magic. Add your first section.','No results found — try adjusting your selection.']},
+    {key:'techNotes', label:'Tech Notes', multi:true, options:['None','Build with reusable sections','Clean modern component structure','Fast-loading layout','Keep code organized','Prioritize performance','SEO-friendly structure','Semantic section structure','Simple polished animations','Use scalable styling']},
+    {key:'funnelType', label:'Funnel Type', multi:true, options:['None','Lead magnet to email nurture to core offer','Direct sales page to checkout','Quiz funnel to offer','Application funnel','Webinar funnel','Tripwire to upsell','Waitlist to launch sequence']},
+    {key:'leadCaptureMethod', label:'Lead Capture Method', multi:true, options:['None','Popup opt-in','Sticky CTA bar','Inline email form','Hero section signup','Quiz opt-in','Footer signup','Exit intent popup']},
+    {key:'coreOfferGoal', label:'Core Offer Goal', multi:true, options:['None','Book a call','Sell a digital product','Sell a course','Sell a service package','Grow email list','Get applications','Build waitlist']},
+    {key:'upsellStrategy', label:'Upsell Strategy', multi:true, options:['None','One-click upsell after checkout','VIP package upsell','Bundle upsell','Order bump','Email upsell sequence','Strategy call upsell','Membership upsell']},
+    {key:'trustBuilders', label:'Trust Builders', multi:true, options:['None','Testimonials near CTA','Trust badges','Before and after proof','Client logos','FAQ near checkout','Guarantee section','Results section']},
+    {key:'urgencyStrategy', label:'Urgency Strategy', multi:true, options:['None','Countdown timer','Limited spots','Launch deadline','Bonus expires soon','Early bird pricing','Cart close notice']},
+    {key:'ctaFlow', label:'CTA Flow', multi:true, options:['None','Soft CTA then strong CTA','Repeated CTA every few sections','Single high-impact CTA','CTA after proof sections','CTA in hero and footer only']},
+    {key:'conversionInstructions', label:'Exact Conversion Instructions', multi:false, options:['None','Place lead magnet above the fold and push email signup first','Position testimonials before the main CTA for trust','Add urgency near checkout and final CTA section','Use upsell immediately after purchase confirmation','Stack proof sections before presenting the offer']},
+    {key:'specialInstructions', label:'Special Instructions', multi:true, options:['None','Add a strong footer','Add trust-building details','Keep it easy to edit later','Keep it premium but clean','Make the homepage feel expensive','Make the site feel custom','Make the CTA impossible to miss','Make the layout visually rich but not cluttered','Make the offer crystal clear']}
+  ]
+};
+
+const state = { locks:{}, history:[], randomHistory:[], mode:'website' };
+
+function makeFloatingBg(){
+  const bg = document.getElementById('floatingBg');
+  const kinds = ['floaty','ring','spark'];
+  for(let i=0;i<34;i++){
+    const el = document.createElement('div');
+    el.className = kinds[i % kinds.length];
+    const size = el.classList.contains('spark') ? 8 + Math.random()*10 : 34 + Math.random()*170;
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.left = Math.random()*100 + '%';
+    el.style.top = Math.random()*100 + '%';
+    el.style.animationDuration = (14 + Math.random()*28) + 's';
+    el.style.animationDelay = (-Math.random()*28) + 's';
+    bg.appendChild(el);
+  }
+}
+function makeId(key,suffix='select'){ return `${key}-${suffix}`; }
+function getCat(key){ return data.categories.find(c=>c.key===key); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function renderPresets(){
+  const grid = document.getElementById('presetGrid');
+  data.presets.forEach((name,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'preset-btn';
+    btn.textContent = name;
+    btn.onclick = ()=>applyPreset(i);
+    grid.appendChild(btn);
+  });
+}
+function renderCategories(){
+  const wrap = document.getElementById('categoryList');
+  data.categories.forEach((cat, idx)=>{
+    const details = document.createElement('details');
+    details.className = 'category';
+    details.open = idx < 7;
+    details.innerHTML = `
+      <summary>
+        <span class="sum-left"><span class="tag">${idx+1}</span><span>${cat.label}</span></span>
+        <span class="tag">${cat.multi ? 'Multi' : 'Single'}</span>
+      </summary>
+      <div class="cat-body">
+        <div class="cat-actions">
+          <button class="tiny-btn lock-btn" data-key="${cat.key}">🔒 Lock</button>
+          <button class="tiny-btn clear-cat-btn" data-key="${cat.key}">Clear</button>
+        </div>
+        <div class="field">
+          <label>${cat.label} Options</label>
+          <select id="${makeId(cat.key)}" ${cat.multi ? 'multiple' : ''}></select>
+        </div>
+        <div class="field" style="margin-top:10px">
+          <label>Custom ${cat.label}</label>
+          <input type="text" id="${makeId(cat.key,'custom')}" placeholder="Type your own ${cat.label.toLowerCase()} value">
+        </div>
+      </div>
+    `;
+    wrap.appendChild(details);
+    const select = details.querySelector('select');
+    cat.options.forEach(opt=>{
+      const o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt;
+      select.appendChild(o);
+    });
+  });
+  document.querySelectorAll('.lock-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const key = btn.dataset.key;
+      state.locks[key] = !state.locks[key];
+      btn.classList.toggle('locked', state.locks[key]);
+      btn.textContent = state.locks[key] ? '🔒 Locked' : '🔒 Lock';
+    });
+  });
+  document.querySelectorAll('.clear-cat-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>clearCategory(btn.dataset.key));
+  });
+}
+function clearCategory(key){
+  const select = document.getElementById(makeId(key));
+  if(select.multiple){
+    [...select.options].forEach(o=>o.selected=false);
+    if(select.options[0]) select.options[0].selected = true;
+  } else {
+    select.value = 'None';
+  }
+  document.getElementById(makeId(key,'custom')).value = '';
+}
+function getValues(key){
+  const select = document.getElementById(makeId(key));
+  const custom = document.getElementById(makeId(key,'custom')).value.trim();
+  let vals = [];
+  if(select.multiple){
+    vals = [...select.selectedOptions].map(o=>o.value).filter(v=>v !== 'None');
+  } else if(select.value && select.value !== 'None'){
+    vals = [select.value];
+  }
+  if(custom) vals.push(custom);
+  return [...new Set(vals)];
+}
+function valueText(key, fallback){
+  const vals = getValues(key);
+  return vals.length ? vals.join(', ') : fallback;
+}
+function setSelectValue(key, value){
+  const select = document.getElementById(makeId(key));
+  if(!select) return;
+  if(select.multiple){
+    const wants = Array.isArray(value) ? value : [value];
+    [...select.options].forEach(o=>o.selected = false);
+    let matched = false;
+    wants.forEach(v=>{
+      const opt = [...select.options].find(o=>o.value === v);
+      if(opt){ opt.selected = true; matched = true; }
+    });
+    if(!matched && select.options[0]) select.options[0].selected = true;
+  } else {
+    select.value = Array.isArray(value) ? (value[0] || 'None') : (value || 'None');
+  }
+}
+function clearAll(){
+  data.categories.forEach(cat=>clearCategory(cat.key));
+  state.locks = {};
+  document.querySelectorAll('.lock-btn').forEach(btn=>{ btn.classList.remove('locked'); btn.textContent = '🔒 Lock'; });
+  ['mainOutput','shortOutput','variation1','variation2','variation3'].forEach(id=>document.getElementById(id).textContent='');
+}
+function getSnapshot(){
+  const snap = {};
+  data.categories.forEach(cat=>snap[cat.key]=getValues(cat.key));
+  return snap;
+}
+function randomizeAll(){
+  data.categories.forEach(cat=>{
+    if(state.locks[cat.key]) return;
+    const pool = cat.options.filter(v=>v !== 'None');
+    const count = ['websiteType','brandFocus','sectionBlocks','designFeatures','functionality','specialInstructions'].includes(cat.key) ? 2 : 1;
+    if(cat.multi){
+      const chosen = [];
+      while(chosen.length < Math.min(count, pool.length)){
+        const item = pick(pool);
+        if(!chosen.includes(item)) chosen.push(item);
+      }
+      setSelectValue(cat.key, chosen);
+    } else {
+      setSelectValue(cat.key, pick(pool));
+    }
+    document.getElementById(makeId(cat.key,'custom')).value='';
+  });
+  const sig = JSON.stringify(getSnapshot()) + state.mode;
+  if(state.randomHistory.includes(sig)){
+    let tries = 0;
+    while(state.randomHistory.includes(JSON.stringify(getSnapshot()) + state.mode) && tries < 12){
+      data.categories.forEach(cat=>{
+        if(state.locks[cat.key]) return;
+        const pool = cat.options.filter(v=>v !== 'None');
+        if(cat.multi){ setSelectValue(cat.key, [pick(pool)]); }
+        else { setSelectValue(cat.key, pick(pool)); }
+      });
+      tries++;
+    }
+  }
+  state.randomHistory.push(JSON.stringify(getSnapshot()) + state.mode);
+  if(state.randomHistory.length > 500) state.randomHistory.shift();
+  generateAll();
+}
+function buildPrompt(sel, shortVersion=false){
+  const modeLabel = state.mode === 'landing' ? 'landing page' : 'full website';
+  const siteType = valueText('websiteType','premium website');
+  const brandFocus = valueText('brandFocus','website designer brand');
+  const goal = valueText('pageGoal', state.mode === 'landing' ? 'collect leads and drive conversions' : 'build trust and convert visitors');
+  const pageType = valueText('pageType', state.mode === 'landing' ? 'sales page' : 'full multi-section website');
+  const layout = valueText('layoutStyle','strong visual hierarchy layout');
+  const hero = valueText('heroSection','big headline with CTA');
+  const nav = valueText('navigationStyle','modern sticky nav');
+  const sections = valueText('sectionBlocks', state.mode === 'landing' ? 'offer section, testimonial section, FAQ section, CTA strip, contact section' : 'about section, feature cards, service cards, testimonial section, contact section');
+  const cta = valueText('ctaStyle','premium button CTA');
+  const colors = valueText('colorPalette','hot pink and black');
+  const fonts = valueText('fontStyle','bold geometric headline');
+  const mood = valueText('brandMood','expensive and polished');
+  const features = valueText('designFeatures','mobile-first structure, rounded cards, sticky navigation');
+  const functionality = valueText('functionality','contact form, footer with socials');
+  const mobile = valueText('mobileBehavior','use mobile-first responsiveness');
+  const direction = valueText('visualDirection','website that feels expensive');
+  const tone = valueText('contentTone','strategic and conversion-driven');
+  const imageUsage = valueText('imageUsage','editable hero side image, editable gallery images');
+  const imageStyle = valueText('imageStyle','luxury, editorial');
+  const imagePlacement = valueText('imagePlacement','right of text, staggered gallery');
+  const imageShape = valueText('imageShape','rounded corners, layered cards');
+  const imageEditability = valueText('imageEditability','all image blocks should be editable, images should be easy to swap later');
+  const marqueeType = valueText('marqueeType','scrolling announcement bar');
+  const marqueePlacement = valueText('marqueePlacement','above hero');
+  const marqueeContent = valueText('marqueeContent','promo message');
+  const marqueeBehavior = valueText('marqueeBehavior','smooth motion, loop infinitely');
+  const marqueeEditability = valueText('marqueeEditability','marquee text should be editable');
+  const customMarqueeText = valueText('customMarqueeText','');
+  const customImageInstructions = valueText('customImageInstructions','');
+  const brandName = valueText('brandName','');
+  const buttonText = valueText('buttonText','Get Started, Learn More');
+  const sectionHeadings = valueText('sectionHeadings','About Us, Our Services, Testimonials, Contact');
+  const logoInstructions = valueText('logoInstructions','add a logo area that is easy to replace later');
+  const footerText = valueText('footerText','use an editable footer text block');
+  const socialLinks = valueText('socialLinks','add Instagram link area, add TikTok link area, make social icons editable');
+  const contactInfo = valueText('contactInfo','add business email field, add contact form details, make contact details editable');
+  const colorHex = valueText('colorHex','');
+  const exactContactText = valueText('exactContactText','');
+  const exactFooterText = valueText('exactFooterText','');
+  const exactHeadline = valueText('exactHeadline','');
+  const exactSubheading = valueText('exactSubheading','');
+  const exactCTAButton = valueText('exactCTAButton','');
+  const aboutText = valueText('aboutText','');
+  const serviceDescriptions = valueText('serviceDescriptions','');
+  const testimonialText = valueText('testimonialText','');
+  const faqContent = valueText('faqContent','');
+  const pricingText = valueText('pricingText','');
+  const offerNames = valueText('offerNames','');
+  const brandStory = valueText('brandStory','');
+  const benefitsBullets = valueText('benefitsBullets','');
+  const formPlaceholderText = valueText('formPlaceholderText','');
+  const navMenuText = valueText('navMenuText','');
+  const announcementBarVariants = valueText('announcementBarVariants','');
+  const testimonialNameTitle = valueText('testimonialNameTitle','');
+  const socialHandles = valueText('socialHandles','');
+  const businessHours = valueText('businessHours','');
+  const policyDisclaimer = valueText('policyDisclaimer','');
+  const emailSignupText = valueText('emailSignupText','');
+  const pricingBreakdown = valueText('pricingBreakdown','');
+  const contactFormLabels = valueText('contactFormLabels','');
+  const trustBadgeText = valueText('trustBadgeText','');
+  const featureCardText = valueText('featureCardText','');
+  const finalCTASectionText = valueText('finalCTASectionText','');
+  const popupText = valueText('popupText','');
+  const checkoutMessage = valueText('checkoutMessage','');
+  const errorMessage = valueText('errorMessage','');
+  const emptyStateText = valueText('emptyStateText','');
+  const countdownText = valueText('countdownText','');
+  const thankYouMessage = valueText('thankYouMessage','');
+  const funnelType = valueText('funnelType','conversion-focused funnel');
+  const leadCaptureMethod = valueText('leadCaptureMethod','smart lead capture placements');
+  const coreOfferGoal = valueText('coreOfferGoal', state.mode === 'landing' ? 'sell the main offer' : 'turn visitors into qualified leads');
+  const upsellStrategy = valueText('upsellStrategy','strategic upsell path');
+  const trustBuilders = valueText('trustBuilders','trust-building proof sections');
+  const urgencyStrategy = valueText('urgencyStrategy','clear urgency where it fits naturally');
+  const ctaFlow = valueText('ctaFlow','repeated CTA every few sections');
+  const conversionInstructions = valueText('conversionInstructions','');
+  const tech = valueText('techNotes','clean modern component structure, SEO-friendly structure');
+  const special = valueText('specialInstructions','make the layout visually rich but not cluttered');
+  if(shortVersion){
+    return `Create a responsive ${modeLabel} for ${brandFocus}${brandName ? ` under the brand name "${brandName}"` : ''}. Build a ${siteType} with a ${layout}, ${hero}, ${nav}, and sections for ${sections}. Use a ${colors} palette${colorHex ? ` with these exact hex colors: ${colorHex}` : ''}, ${fonts} typography, and a ${mood} brand mood. Make it ${direction}, ${tone}, and conversion-focused.${exactHeadline ? ` Use this exact main headline: "${exactHeadline}".` : ''}${exactSubheading ? ` Use this exact subheading: "${exactSubheading}".` : ''}${exactCTAButton ? ` Use this exact primary CTA button text: "${exactCTAButton}".` : ''}${aboutText ? ` Use this exact about text: "${aboutText}".` : ''}${serviceDescriptions ? ` Use these exact service description details: "${serviceDescriptions}".` : ''}${testimonialText ? ` Use this exact testimonial text: "${testimonialText}".` : ''}${testimonialNameTitle ? ` Attribute the testimonial to: "${testimonialNameTitle}".` : ''}${faqContent ? ` Use this exact FAQ content: "${faqContent}".` : ''}${pricingText ? ` Use this exact pricing text: "${pricingText}".` : ''}${offerNames ? ` Use this exact offer or package name: "${offerNames}".` : ''}${brandStory ? ` Use this exact brand story: "${brandStory}".` : ''}${benefitsBullets ? ` Use these exact benefits or bullets: "${benefitsBullets}".` : ''}${formPlaceholderText ? ` Use these exact form placeholder words: "${formPlaceholderText}".` : ''}${navMenuText ? ` Use this exact nav menu text: "${navMenuText}".` : ''}${announcementBarVariants ? ` Use this exact announcement bar text variant: "${announcementBarVariants}".` : ''}${socialHandles ? ` Use these exact social handles: "${socialHandles}".` : ''}${businessHours ? ` Show these exact business hours: "${businessHours}".` : ''}${policyDisclaimer ? ` Use this exact policy or disclaimer text: "${policyDisclaimer}".` : ''}${emailSignupText ? ` Use this exact email signup text: "${emailSignupText}".` : ''}${pricingBreakdown ? ` Use this exact pricing package breakdown: "${pricingBreakdown}".` : ''}${contactFormLabels ? ` Use these exact contact form labels: "${contactFormLabels}".` : ''}${trustBadgeText ? ` Use this exact trust badge text: "${trustBadgeText}".` : ''}${featureCardText ? ` Use this exact feature card text: "${featureCardText}".` : ''}${finalCTASectionText ? ` Use this exact final CTA section text: "${finalCTASectionText}".` : ''}${popupText ? ` Use this exact popup text: "${popupText}".` : ''}${countdownText ? ` Use this exact countdown text: "${countdownText}".` : ''}${thankYouMessage ? ` Use this exact thank-you message text: "${thankYouMessage}".` : ''}${checkoutMessage ? ` Use this exact checkout message text: "${checkoutMessage}".` : ''}${errorMessage ? ` Use this exact error/validation message text: "${errorMessage}".` : ''}${emptyStateText ? ` Use this exact empty state text: "${emptyStateText}".` : ''} Add ${features} plus ${functionality}. Include ${imageUsage} in a ${imageStyle} style with ${imagePlacement} placement and ${imageShape} presentation. ${imageEditability}.${customImageInstructions ? ` Also ${customImageInstructions}.` : ''} Add a ${marqueeType} ${marqueePlacement} using ${marqueeContent} content with ${marqueeBehavior}. ${marqueeEditability}.${customMarqueeText ? ` Use this exact marquee text: "${customMarqueeText}".` : ''} Use button text such as ${buttonText}. Use section headings such as ${sectionHeadings}. ${logoInstructions}. ${footerText}.${exactFooterText ? ` Use this exact footer text: "${exactFooterText}".` : ''} Include ${socialLinks}. Include ${contactInfo}.${exactContactText ? ` Use this exact contact text somewhere appropriate: "${exactContactText}".` : ''} ${mobile}. Include a conversion strategy using funnel type ${funnelType}, lead capture method ${leadCaptureMethod}, core offer goal ${coreOfferGoal}, upsell strategy ${upsellStrategy}, trust builders ${trustBuilders}, urgency strategy ${urgencyStrategy}, and CTA flow ${ctaFlow}.${conversionInstructions ? ` Follow this exact conversion instruction: "${conversionInstructions}".` : ''} ${special}.`;
+  }
+  return `Create a responsive ${modeLabel} for ${brandFocus} that can be used in any AI website builder or website creation platform. Build a ${siteType} as a ${pageType}. The primary goal is to ${goal}. Use a ${layout} with ${hero} and ${nav}. Include sections for ${sections}. Use ${cta} for the calls to action.
+
+Design direction:
+- Color palette: ${colors}
+- Typography: ${fonts}
+- Brand mood: ${mood}
+- Visual direction: ${direction}
+- Content tone: ${tone}
+
+Feature and behavior requirements:
+- Include: ${features}
+- Functionality: ${functionality}
+- Mobile behavior: ${mobile}
+- Technical notes: ${tech}
+
+Images and editability:
+- Image usage: ${imageUsage}
+- Image style: ${imageStyle}
+- Image placement: ${imagePlacement}
+- Image shape: ${imageShape}
+- Image editability: ${imageEditability}
+
+Marquee requirements:
+- Marquee type: ${marqueeType}
+- Marquee placement: ${marqueePlacement}
+- Marquee content style: ${marqueeContent}
+- Marquee behavior: ${marqueeBehavior}
+- Marquee editability: ${marqueeEditability}
+${customMarqueeText ? `- Use this exact marquee text: ${customMarqueeText}
+` : ''}Additional image directions:
+${customImageInstructions ? `- ${customImageInstructions}
+` : ''}Extra instructions:
+- ${special}
+
+Conversion strategy:
+- Funnel type: ${funnelType}
+- Lead capture method: ${leadCaptureMethod}
+- Core offer goal: ${coreOfferGoal}
+- Upsell strategy: ${upsellStrategy}
+- Trust builders: ${trustBuilders}
+- Urgency strategy: ${urgencyStrategy}
+- CTA flow: ${ctaFlow}
+${conversionInstructions ? `- Exact conversion instructions: ${conversionInstructions}
+` : ''}
+Make the site feel polished, premium, easy to navigate, visually strong, and ready to convert. Keep the layout clean but rich. Prioritize responsiveness, modern section spacing, clear hierarchy, strong CTA placement, editable images, editable marquee text, and an editable structure any AI website builder can build cleanly.`;
+}
+function generateAll(){
+  const sel = getSnapshot();
+  document.getElementById('mainOutput').textContent = buildPrompt(sel,false);
+  document.getElementById('shortOutput').textContent = buildPrompt(sel,true);
+}
+function generateVariations(){
+  const base = getSnapshot();
+  const variantKeys = ['layoutStyle','heroSection','sectionBlocks','ctaStyle','colorPalette','fontStyle','brandMood','designFeatures','functionality','visualDirection','contentTone','specialInstructions','imageUsage','imageStyle','imagePlacement','imageShape','marqueeType','marqueePlacement','marqueeContent','marqueeBehavior','customMarqueeText','customImageInstructions','brandName','buttonText','sectionHeadings','logoInstructions','footerText','socialLinks','contactInfo','colorHex','exactContactText','exactFooterText','exactHeadline','exactSubheading','exactCTAButton','aboutText','serviceDescriptions','testimonialText','faqContent','pricingText','offerNames','brandStory','benefitsBullets','formPlaceholderText','navMenuText','announcementBarVariants','testimonialNameTitle','socialHandles','businessHours','policyDisclaimer','emailSignupText','pricingBreakdown','contactFormLabels','trustBadgeText','featureCardText','finalCTASectionText','popupText','countdownText','thankYouMessage','checkoutMessage','errorMessage','emptyStateText','funnelType','leadCaptureMethod','coreOfferGoal','upsellStrategy','trustBuilders','urgencyStrategy','ctaFlow','conversionInstructions'];
+  [1,2,3].forEach((n)=>{
+    const temp = JSON.parse(JSON.stringify(base));
+    variantKeys.forEach(key=>{
+      const cat = getCat(key);
+      const pool = cat.options.filter(v=>v !== 'None');
+      if(cat.multi){
+        const chosen = [];
+        while(chosen.length < Math.min(2,pool.length)){
+          const item = pick(pool);
+          if(!chosen.includes(item)) chosen.push(item);
+        }
+        temp[key] = chosen;
+      } else {
+        temp[key] = [pick(pool)];
+      }
+    });
+    document.getElementById(`variation${n}`).textContent = buildPromptFromTemp(temp, true);
+  });
+}
+function buildPromptFromTemp(sel, shortVersion=false){
+  const get = (key, fallback) => (sel[key] && sel[key].length ? sel[key].join(', ') : fallback);
+  const modeLabel = state.mode === 'landing' ? 'landing page' : 'full website';
+  if(shortVersion){
+    return `Create a responsive ${modeLabel} for ${get('brandFocus','website designer brand')}${get('brandName','') ? ` under the brand name "${get('brandName','')}"` : ''} with ${get('layoutStyle','strong visual hierarchy layout')}, ${get('heroSection','big headline with CTA')}, ${get('sectionBlocks','feature cards, testimonial section, contact section')}, ${get('colorPalette','hot pink and black')}${get('colorHex','') ? ` using exact hex colors ${get('colorHex','')}` : ''}, and ${get('fontStyle','bold geometric headline')} typography.${get('exactHeadline','') ? ` Use this exact main headline: "${get('exactHeadline','')}".` : ''}${get('exactSubheading','') ? ` Use this exact subheading: "${get('exactSubheading','')}".` : ''}${get('exactCTAButton','') ? ` Use this exact CTA button text: "${get('exactCTAButton','')}".` : ''}${get('aboutText','') ? ` Use this exact about text: "${get('aboutText','')}".` : ''}${get('serviceDescriptions','') ? ` Use these exact service descriptions: "${get('serviceDescriptions','')}".` : ''}${get('testimonialText','') ? ` Use this exact testimonial text: "${get('testimonialText','')}".` : ''}${get('testimonialNameTitle','') ? ` Attribute that testimonial to: "${get('testimonialNameTitle','')}".` : ''}${get('faqContent','') ? ` Use this exact FAQ content: "${get('faqContent','')}".` : ''}${get('pricingText','') ? ` Use this exact pricing text: "${get('pricingText','')}".` : ''}${get('offerNames','') ? ` Use this exact offer or package name: "${get('offerNames','')}".` : ''}${get('brandStory','') ? ` Use this exact brand story: "${get('brandStory','')}".` : ''}${get('benefitsBullets','') ? ` Use these exact benefits or bullets: "${get('benefitsBullets','')}".` : ''}${get('formPlaceholderText','') ? ` Use this exact form placeholder text: "${get('formPlaceholderText','')}".` : ''}${get('navMenuText','') ? ` Use this exact nav menu text: "${get('navMenuText','')}".` : ''}${get('announcementBarVariants','') ? ` Use this exact announcement bar text variant: "${get('announcementBarVariants','')}".` : ''}${get('socialHandles','') ? ` Use these exact social handles: "${get('socialHandles','')}".` : ''}${get('businessHours','') ? ` Show these exact business hours: "${get('businessHours','')}".` : ''}${get('policyDisclaimer','') ? ` Use this exact policy or disclaimer text: "${get('policyDisclaimer','')}".` : ''}${get('emailSignupText','') ? ` Use this exact email signup text: "${get('emailSignupText','')}".` : ''}${get('pricingBreakdown','') ? ` Use this exact pricing package breakdown: "${get('pricingBreakdown','')}".` : ''}${get('contactFormLabels','') ? ` Use these exact contact form labels: "${get('contactFormLabels','')}".` : ''}${get('trustBadgeText','') ? ` Use this exact trust badge text: "${get('trustBadgeText','')}".` : ''}${get('featureCardText','') ? ` Use this exact feature card text: "${get('featureCardText','')}".` : ''}${get('finalCTASectionText','') ? ` Use this exact final CTA section text: "${get('finalCTASectionText','')}".` : ''}${get('popupText','') ? ` Use this exact popup text: "${get('popupText','')}".` : ''}${get('countdownText','') ? ` Use this exact countdown text: "${get('countdownText','')}".` : ''}${get('thankYouMessage','') ? ` Use this exact thank-you message text: "${get('thankYouMessage','')}".` : ''} Add ${get('designFeatures','mobile-first structure')} and ${get('functionality','contact form')}. Include ${get('imageUsage','editable hero side image, editable gallery images')} with ${get('imagePlacement','right of text')} placement, and add a ${get('marqueeType','scrolling announcement bar')} ${get('marqueePlacement','above hero')} with editable text. Use button text such as ${get('buttonText','Get Started, Learn More')} and section headings such as ${get('sectionHeadings','About Us, Our Services, Testimonials')}. ${get('logoInstructions','add a logo area that is easy to replace later')}. ${get('footerText','use an editable footer text block')}.${get('exactFooterText','') ? ` Use this exact footer text: "${get('exactFooterText','')}".` : ''} Include ${get('socialLinks','add Instagram link area')} and ${get('contactInfo','add business email field')}.${get('exactContactText','') ? ` Use this exact contact text: "${get('exactContactText','')}".` : ''} Use funnel type ${get('funnelType','conversion-focused funnel')}, lead capture method ${get('leadCaptureMethod','smart lead capture placements')}, core offer goal ${get('coreOfferGoal', state.mode === 'landing' ? 'sell the main offer' : 'turn visitors into qualified leads')}, upsell strategy ${get('upsellStrategy','strategic upsell path')}, trust builders ${get('trustBuilders','trust-building proof sections')}, urgency strategy ${get('urgencyStrategy','clear urgency where it fits naturally')}, and CTA flow ${get('ctaFlow','repeated CTA every few sections')}.${get('conversionInstructions','') ? ` Follow this exact conversion instruction: "${get('conversionInstructions','')}".` : ''} Make it ${get('brandMood','expensive and polished')} and ${get('contentTone','strategic and conversion-driven')}.${get('customMarqueeText','') ? ` Use this exact marquee text: "${get('customMarqueeText','')}".` : ''}${get('customImageInstructions','') ? ` Also ${get('customImageInstructions','')}.` : ''}`;
+  }
+  return `Create a responsive ${modeLabel} for ${get('brandFocus','website designer brand')} that can be used in any AI website builder or website creation platform${get('brandName','') ? `, using the brand name "${get('brandName','')}"` : ''}. Build a ${get('websiteType','premium website')} as a ${get('pageType', state.mode === 'landing' ? 'sales page' : 'full multi-section website')}. The main goal is to ${get('pageGoal', state.mode === 'landing' ? 'collect leads and drive conversions' : 'build trust and convert visitors')}. Use ${get('layoutStyle','strong visual hierarchy layout')}, ${get('heroSection','big headline with CTA')}, ${get('navigationStyle','modern sticky nav')}, and sections for ${get('sectionBlocks','feature cards, testimonial section, contact section')}. Use ${get('colorPalette','hot pink and black')}${get('colorHex','') ? ` with exact hex colors ${get('colorHex','')}` : ''}, ${get('fontStyle','bold geometric headline')}, and a ${get('brandMood','expensive and polished')} feel.${get('exactHeadline','') ? ` Use this exact main headline: ${get('exactHeadline','')}.` : ''}${get('exactSubheading','') ? ` Use this exact subheading: ${get('exactSubheading','')}.` : ''}${get('exactCTAButton','') ? ` Use this exact primary CTA button text: ${get('exactCTAButton','')}.` : ''}${get('aboutText','') ? ` Use this exact about text: ${get('aboutText','')}.` : ''}${get('serviceDescriptions','') ? ` Use these exact service descriptions: ${get('serviceDescriptions','')}.` : ''}${get('testimonialText','') ? ` Use this exact testimonial text: ${get('testimonialText','')}.` : ''}${get('testimonialNameTitle','') ? ` Attribute that testimonial to: ${get('testimonialNameTitle','')}.` : ''}${get('faqContent','') ? ` Use this exact FAQ content: ${get('faqContent','')}.` : ''}${get('pricingText','') ? ` Use this exact pricing text: ${get('pricingText','')}.` : ''}${get('offerNames','') ? ` Use this exact offer or package name: ${get('offerNames','')}.` : ''}${get('brandStory','') ? ` Use this exact brand story: ${get('brandStory','')}.` : ''}${get('benefitsBullets','') ? ` Use these exact benefits or bullets: ${get('benefitsBullets','')}.` : ''}${get('formPlaceholderText','') ? ` Use this exact form placeholder text: ${get('formPlaceholderText','')}.` : ''}${get('navMenuText','') ? ` Use this exact nav menu text: ${get('navMenuText','')}.` : ''}${get('announcementBarVariants','') ? ` Use this exact announcement bar text variant: ${get('announcementBarVariants','')}.` : ''}${get('socialHandles','') ? ` Use these exact social handles: ${get('socialHandles','')}.` : ''}${get('businessHours','') ? ` Show these exact business hours: ${get('businessHours','')}.` : ''}${get('policyDisclaimer','') ? ` Use this exact policy or disclaimer text: ${get('policyDisclaimer','')}.` : ''}${get('emailSignupText','') ? ` Use this exact email signup text: ${get('emailSignupText','')}.` : ''}${get('pricingBreakdown','') ? ` Use this exact pricing package breakdown: ${get('pricingBreakdown','')}.` : ''}${get('contactFormLabels','') ? ` Use these exact contact form labels: ${get('contactFormLabels','')}.` : ''}${get('trustBadgeText','') ? ` Use this exact trust badge text: ${get('trustBadgeText','')}.` : ''}${get('featureCardText','') ? ` Use this exact feature card text: ${get('featureCardText','')}.` : ''}${get('finalCTASectionText','') ? ` Use this exact final CTA section text: ${get('finalCTASectionText','')}.` : ''}${get('popupText','') ? ` Use this exact popup text: ${get('popupText','')}.` : ''}${get('countdownText','') ? ` Use this exact countdown text: ${get('countdownText','')}.` : ''}${get('thankYouMessage','') ? ` Use this exact thank-you message text: ${get('thankYouMessage','')}.` : ''} Add ${get('designFeatures','mobile-first structure')}, ${get('functionality','contact form')}, ${get('imageUsage','editable hero side image, editable gallery images')}, ${get('imageEditability','all image blocks should be editable')}, and a ${get('marqueeType','scrolling announcement bar')} ${get('marqueePlacement','above hero')} with ${get('marqueeBehavior','smooth motion, loop infinitely')} and editable text. Use button text such as ${get('buttonText','Get Started, Learn More')} and section headings such as ${get('sectionHeadings','About Us, Our Services, Testimonials')}. ${get('logoInstructions','add a logo area that is easy to replace later')}. ${get('footerText','use an editable footer text block')}.${get('exactFooterText','') ? ` Use this exact footer text: ${get('exactFooterText','')}.` : ''} Include ${get('socialLinks','add Instagram link area')} and ${get('contactInfo','add business email field')}.${get('exactContactText','') ? ` Use this exact contact text: ${get('exactContactText','')}.` : ''}${get('customMarqueeText','') ? ` Use this exact marquee text: ${get('customMarqueeText','')}.` : ''}${get('customImageInstructions','') ? ` Also ${get('customImageInstructions','')}.` : ''} ${get('specialInstructions','make the layout visually rich but not cluttered')}.`;
+}
+function savePrompt(){
+  if(!document.getElementById('mainOutput').textContent.trim()) generateAll();
+  const text = document.getElementById('mainOutput').textContent.trim();
+  state.history.unshift(text);
+  if(state.history.length > 50) state.history.pop();
+  renderHistory();
+}
+function renderHistory(){
+  const wrap = document.getElementById('historyList');
+  wrap.innerHTML = '';
+  if(!state.history.length){
+    wrap.innerHTML = '<div class="note">No saved prompts yet.</div>';
+    return;
+  }
+  state.history.forEach((txt, i)=>{
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `<div style="font-size:.8rem;color:#ffd9ef;margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em">Saved Prompt ${i+1}</div><div>${escapeHtml(txt)}</div><div class="copy-row"><button class="copy-btn" data-copy-text="${encodeURIComponent(txt)}">Copy Saved Prompt</button></div>`;
+    wrap.appendChild(item);
+  });
+  bindCopyButtons();
+}
+function escapeHtml(str){
+  return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function applyPreset(index){
+  clearAll();
+  const presets = [
+    {mode:'website',websiteType:['Agency website'],brandFocus:['Agency services'],pageGoal:['Highlight services','Collect leads'],pageType:['Full multi-section website'],layoutStyle:['Bold hero plus stacked sections'],heroSection:['Big headline with CTA'],navigationStyle:['Modern sticky nav'],sectionBlocks:['Feature cards','Service cards','Testimonial section'],ctaStyle:['Bold gradient CTA'],colorPalette:['Magenta and orange'],fontStyle:['Bold all-caps sans'],brandMood:['Bold and strategic'],designFeatures:['Sticky navigation','Card hover effects'],functionality:['Contact form','Footer with socials'],visualDirection:['Bold premium brand feel'],contentTone:['Clear and professional'],imageUsage:['Editable hero side image','Editable gallery images'],imageStyle:['Bold modern'],imagePlacement:['Right of text','Staggered gallery'],imageShape:['Rounded corners'],imageEditability:['All image blocks should be editable','Images should be easy to swap later'],marqueeType:['Scrolling announcement bar'],marqueePlacement:['Above hero'],marqueeContent:['Promo message'],marqueeBehavior:['Smooth motion','Loop infinitely'],marqueeEditability:['Marquee text should be editable'],customMarqueeText:['Luxury Generator Bundle • Instant Download • Premium Images'],customImageInstructions:['Add editable mockup images in the portfolio area'],brandName:['GlamorousGrammyGlowUp'],buttonText:['Book Your Glow-Up','Get Started'],sectionHeadings:['Our Services','Portfolio','Testimonials','Contact'],logoInstructions:['Add a feminine luxury logo style','Add a logo area that is easy to replace later'],footerText:['Use all rights reserved in the footer','Use an editable footer text block'],socialLinks:['Add Instagram link area','Add TikTok link area','Add YouTube link area','Make social icons editable'],contactInfo:['Add business email field','Add contact form details','Show contact info in footer','Make contact details editable'],colorHex:['#000000','#ff3ca7','#ffd700','#ffffff'],exactContactText:['Email us at hello@yourbrand.com'],exactFooterText:['all rights reserved by glamorousgrammyglowup'],exactHeadline:['Build the Brand That Looks as Expensive as You Are'],exactSubheading:['Create a premium online presence that feels polished, strategic, and built to convert.'],exactCTAButton:['Book Your Glow-Up'],aboutText:['We create premium websites for women-led brands that want to look polished, strategic, and high-converting.'],serviceDescriptions:['Custom website design, landing page creation, brand styling, and conversion-focused layout strategy.'],testimonialText:['This website finally looks like my price point and makes my brand feel premium.'],faqContent:['FAQ 1: How long does the process take? Answer: Timelines vary, but most projects are completed within a few weeks. FAQ 2: Do you offer revisions? Answer: Yes, revisions are included so the final result feels aligned with your vision.'],pricingText:['Starting at $497 for premium website design.'],offerNames:['The Website Glow-Up'],brandStory:['Our brand was created to help women-led businesses show up online with confidence, clarity, and premium presentation.'],benefitsBullets:['Premium design • Mobile-friendly layout • Easy-to-edit content • Conversion-focused structure'],formPlaceholderText:['Name, Email, Tell Me About Your Project'],navMenuText:['Home • About • Services • Portfolio • Testimonials • Contact'],announcementBarVariants:['Luxury Generator Bundle • Instant Download • Premium Images'],testimonialNameTitle:['Monique Davis — Digital Product Creator'],socialHandles:['Instagram: @glamorousgrammyglowup • TikTok: @glamorousgrammyglowup'],businessHours:['Monday–Friday 9 AM–5 PM'],policyDisclaimer:['All sales are final on digital products.'],emailSignupText:['Join the list for exclusive launches, freebies, and brand glow-up tips.'],pricingBreakdown:['Starter Package: Homepage design only. Signature Package: Multi-section website. VIP Package: Full premium custom website experience.'],contactFormLabels:['Full Name • Email Address • Business Name • What You Need Help With'],trustBadgeText:['Premium design • Strategic layout • Mobile ready'],featureCardText:['Premium design, mobile-friendly layout, easy editing, and conversion-focused structure.'],finalCTASectionText:['Ready for a website that finally matches your value? Let’s build it.'],popupText:['Wait — before you go, grab your premium freebie.'],countdownText:['Offer ends soon — don’t miss your spot.'],thankYouMessage:['Thank you for reaching out — we’ll be in touch soon.'],checkoutMessage:['Complete your checkout to unlock instant access.'],errorMessage:['Please fill out all required fields.'],emptyStateText:['Nothing here yet — let’s build something beautiful.'],specialInstructions:['Make the CTA impossible to miss']},
+    {mode:'website',websiteType:['Beauty brand website'],brandFocus:['Beauty business'],pageGoal:['Drive product sales'],layoutStyle:['Luxury modular layout'],heroSection:['Clean product hero'],sectionBlocks:['Product grid','Social proof section','FAQ section'],ctaStyle:['Glossy rounded CTA'],colorPalette:['Black and ivory','Pink and gold'],fontStyle:['Fashion-mag serif'],brandMood:['Feminine and luxe'],designFeatures:['Rounded cards','Scroll reveal animations'],functionality:['Featured products section','Email signup'],visualDirection:['Premium beauty-brand feel']},
+    {mode:'website',websiteType:['Website designer website'],brandFocus:['Website designer'],pageGoal:['Book consultations'],layoutStyle:['Strong visual hierarchy layout'],heroSection:['Bold founder intro'],sectionBlocks:['Portfolio section','Testimonial section','Contact section'],ctaStyle:['Premium button CTA'],colorPalette:['Black and crimson'],fontStyle:['Condensed power headline'],brandMood:['Statement-making and bold'],designFeatures:['Sticky CTA','Scroll reveal animations'],functionality:['Inquiry form','Integrated testimonials'],visualDirection:['Website that feels expensive']},
+    {mode:'landing',websiteType:['Business coach website'],brandFocus:['Business coach'],pageGoal:['Collect leads'],pageType:['Lead generation page'],layoutStyle:['Soft feminine layout'],heroSection:['Value-driven hero section'],sectionBlocks:['Founder story','Offer section','Testimonial section','FAQ section'],ctaStyle:['Soft feminine CTA'],colorPalette:['Pink and champagne'],fontStyle:['Soft feminine sans'],brandMood:['Soft and welcoming'],designFeatures:['Newsletter sign-up','Sticky CTA'],functionality:['Lead magnet signup','Contact form'],visualDirection:['Clean polished website feel']},
+    {mode:'website',websiteType:['Course website'],brandFocus:['Course creator'],pageGoal:['Drive course sales'],pageType:['Full multi-section website'],layoutStyle:['Grid-based layout'],heroSection:['Offer-driven hero section'],sectionBlocks:['How it works section','Social proof section','FAQ section'],ctaStyle:['Large sales CTA'],colorPalette:['Hot pink and white'],fontStyle:['Bold geometric headline'],brandMood:['Playful and premium'],functionality:['Pricing cards','Email signup']},
+    {mode:'website',websiteType:['Creative portfolio website'],brandFocus:['Creative studio'],pageGoal:['Showcase a portfolio'],layoutStyle:['Editorial split layout'],heroSection:['Text-first hero section'],sectionBlocks:['Portfolio section','About section','Contact section'],ctaStyle:['Minimal outline CTA'],colorPalette:['Monochrome black'],fontStyle:['Minimal modern serif'],brandMood:['Clean and elevated'],visualDirection:['High-end modern website feel']},
+    {mode:'website',websiteType:['Digital product shop'],brandFocus:['Digital products'],pageGoal:['Sell a digital product'],layoutStyle:['Multi-panel premium layout'],heroSection:['Big headline with CTA'],sectionBlocks:['Product grid','FAQ section','CTA strip'],ctaStyle:['Bold gradient CTA'],colorPalette:['Hot pink and black'],fontStyle:['Bold geometric headline'],brandMood:['Playful and premium'],functionality:['Shop section','Email signup']},
+    {mode:'website',websiteType:['Fashion brand website'],brandFocus:['Fashion accessories'],pageGoal:['Build trust'],layoutStyle:['Luxury modular layout'],heroSection:['Statement hero with trust badges'],sectionBlocks:['Gallery section','About section','Product grid'],colorPalette:['Lavender and mint'],fontStyle:['High-contrast serif'],brandMood:['High-end and stylish']},
+    {mode:'website',websiteType:['Personal brand website'],brandFocus:['Founder brand'],pageGoal:['Build trust'],layoutStyle:['Centered clean layout'],heroSection:['Bold founder intro'],sectionBlocks:['Founder story','Service cards','Testimonial section'],colorPalette:['Rose gold and ivory'],fontStyle:['Designer script accent'],brandMood:['Elegant and minimal']},
+    {mode:'landing',websiteType:['Hair brand website'],brandFocus:['Hair brand'],pageGoal:['Drive product sales'],pageType:['Product launch page'],layoutStyle:['Conversion-focused sales layout'],heroSection:['Clean product hero'],sectionBlocks:['Offer section','Social proof section','FAQ section'],ctaStyle:['Urgency CTA'],colorPalette:['Black and gold'],fontStyle:['Bold luxury serif'],brandMood:['Expensive and polished']},
+    {mode:'website',websiteType:['Membership website'],brandFocus:['Membership community'],pageGoal:['Promote a membership'],pageType:['Full multi-section website'],layoutStyle:['Luxury modular layout'],heroSection:['Value-driven hero section'],sectionBlocks:['How it works section','Pricing section','Testimonial section'],ctaStyle:['Premium button CTA'],colorPalette:['Purple and aqua'],fontStyle:['Luxury branding sans'],brandMood:['Confident and modern']},
+    {mode:'website',websiteType:['Service-based business website'],brandFocus:['Luxury services'],pageGoal:['Book consultations'],layoutStyle:['Minimal modern layout'],heroSection:['Statement hero with trust badges'],sectionBlocks:['Service cards','Testimonial section','Contact section'],colorPalette:['Black and gold'],fontStyle:['Luxury branding sans'],brandMood:['Expensive and polished']},
+    {mode:'website',websiteType:['Agency website'],brandFocus:['Marketing agency'],pageGoal:['Highlight services'],layoutStyle:['Bold hero plus stacked sections'],heroSection:['Big headline with CTA'],sectionBlocks:['Feature cards','Service cards','Blog preview'],colorPalette:['Purple and aqua'],fontStyle:['Bold all-caps sans'],brandMood:['Bold and strategic']},
+    {mode:'landing',websiteType:['SaaS website'],brandFocus:['Modern portfolio'],pageGoal:['Collect leads'],pageType:['Landing page'],layoutStyle:['Minimal modern layout'],heroSection:['Value-driven hero section'],sectionBlocks:['Feature cards','How it works section','FAQ section'],colorPalette:['Black and neon aqua'],fontStyle:['Clean editorial sans'],brandMood:['Confident and modern']},
+    {mode:'website',websiteType:['Personal brand website'],brandFocus:['Personal brand'],pageGoal:['Grow email list'],layoutStyle:['Centered clean layout'],heroSection:['Bold founder intro'],sectionBlocks:['About section','Blog preview','Email signup'],colorPalette:['Soft pink and tan'],fontStyle:['Soft feminine sans'],brandMood:['Friendly and clear']},
+    {mode:'landing',websiteType:['E-commerce website'],brandFocus:['E-commerce brand'],pageGoal:['Drive product sales'],pageType:['Sales page'],layoutStyle:['Conversion-focused sales layout'],heroSection:['Conversion-heavy sales hero'],sectionBlocks:['Offer section','Social proof section','FAQ section','CTA strip'],ctaStyle:['Large sales CTA'],colorPalette:['Red and white'],fontStyle:['Condensed power headline'],brandMood:['Statement-making and bold']},
+    {mode:'landing',websiteType:['Template shop website'],brandFocus:['Digital products'],pageGoal:['Sell a digital product'],pageType:['Sales page'],layoutStyle:['Strong visual hierarchy layout'],heroSection:['Offer-driven hero section'],sectionBlocks:['Product grid','Testimonial section','FAQ section'],colorPalette:['Hot pink and white'],fontStyle:['Bold geometric headline'],brandMood:['Playful and premium']},
+    {mode:'landing',websiteType:['Website designer website'],brandFocus:['Website designer'],pageGoal:['Book consultations'],pageType:['Lead generation page'],layoutStyle:['Conversion-focused sales layout'],heroSection:['Big headline with CTA'],sectionBlocks:['Portfolio section','Social proof section','Contact section'],colorPalette:['Black and crimson'],fontStyle:['Condensed power headline'],brandMood:['Statement-making and bold']},
+    {mode:'website',websiteType:['Workshop website'],brandFocus:['Course creator'],pageGoal:['Drive course sales'],pageType:['Workshop sales page'],layoutStyle:['Grid-based layout'],heroSection:['Offer-driven hero section'],sectionBlocks:['How it works section','Pricing section','Testimonial section'],colorPalette:['Magenta and orange'],fontStyle:['Bold all-caps sans'],brandMood:['Bold and strategic']},
+    {mode:'website',websiteType:['Personal brand website'],brandFocus:['Content creator brand'],pageGoal:['Grow email list'],layoutStyle:['Bold hero plus stacked sections'],heroSection:['Text-first hero section'],sectionBlocks:['About section','Offer section','Instagram strip'],colorPalette:['Pink and gold'],fontStyle:['Rounded modern sans'],brandMood:['Playful and premium']},
+    {mode:'landing',websiteType:['Business coach website'],brandFocus:['Business coach'],pageGoal:['Book consultations'],pageType:['Sales page'],layoutStyle:['Soft feminine layout'],heroSection:['Value-driven hero section'],sectionBlocks:['Founder story','Testimonial section','Contact section'],colorPalette:['Blush and white'],fontStyle:['Soft feminine sans'],brandMood:['Feminine and luxe']},
+    {mode:'website',websiteType:['Service-based business website'],brandFocus:['Service provider'],pageGoal:['Highlight services'],layoutStyle:['Minimal modern layout'],heroSection:['Big headline with CTA'],sectionBlocks:['Service cards','FAQ section','Contact section'],colorPalette:['Cream and rose'],fontStyle:['Clean editorial sans'],brandMood:['Clean and elevated']},
+    {mode:'website',websiteType:['Beauty brand website'],brandFocus:['Beauty business'],pageGoal:['Launch a brand'],layoutStyle:['Luxury modular layout'],heroSection:['Statement hero with trust badges'],sectionBlocks:['About section','Product grid','Instagram strip'],colorPalette:['Pink and gold'],fontStyle:['Fashion-mag serif'],brandMood:['Feminine and luxe']},
+    {mode:'landing',websiteType:['Website designer website'],brandFocus:['Website designer'],pageGoal:['Collect leads'],pageType:['Landing page'],layoutStyle:['Strong visual hierarchy layout'],heroSection:['Conversion-heavy sales hero'],sectionBlocks:['Offer section','Portfolio section','FAQ section'],colorPalette:['Black and gold'],fontStyle:['Bold all-caps sans'],brandMood:['Expensive and polished']},
+    {mode:'landing',websiteType:['Agency website'],brandFocus:['Agency services'],pageGoal:['Book consultations'],pageType:['Lead generation page'],layoutStyle:['Bold hero plus stacked sections'],heroSection:['Big headline with CTA'],sectionBlocks:['Feature cards','Social proof section','Contact section'],colorPalette:['Electric pink and orange'],fontStyle:['Bold geometric headline'],brandMood:['Statement-making and bold']}
+  ];
+  const preset = presets[index] || {};
+  if(preset.mode) setMode(preset.mode);
+  Object.entries(preset).forEach(([key,val])=>{
+    if(getCat(key)) setSelectValue(key,val);
+  });
+  generateAll();
+}
+function setMode(mode){
+  state.mode = mode;
+  document.getElementById('modeWebsiteBtn').classList.toggle('active', mode === 'website');
+  document.getElementById('modeLandingBtn').classList.toggle('active', mode === 'landing');
+}
+function bindCopyButtons(){
+  document.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.onclick = async ()=>{
+      let text = '';
+      if(btn.dataset.copyTarget){ text = document.getElementById(btn.dataset.copyTarget).textContent.trim(); }
+      else if(btn.dataset.copyText){ text = decodeURIComponent(btn.dataset.copyText); }
+      if(!text) return;
+      await navigator.clipboard.writeText(text);
+      const old = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(()=>btn.textContent = old, 1200);
+    };
+  });
+}
+function bindMainActions(){
+  document.getElementById('generateBtn').addEventListener('click', generateAll);
+  document.getElementById('randomBtn').addEventListener('click', randomizeAll);
+  document.getElementById('clearBtn').addEventListener('click', clearAll);
+  document.getElementById('saveBtn').addEventListener('click', savePrompt);
+  document.getElementById('variationsBtn').addEventListener('click', generateVariations);
+  document.getElementById('copyMainBtn').addEventListener('click', async()=>{
+    if(!document.getElementById('mainOutput').textContent.trim()) generateAll();
+    const text = document.getElementById('mainOutput').textContent.trim();
+    if(!text) return;
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('copyMainBtn');
+    const old = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(()=>btn.textContent = old, 1200);
+  });
+  document.getElementById('modeWebsiteBtn').addEventListener('click', ()=>{ setMode('website'); generateAll(); });
+  document.getElementById('modeLandingBtn').addEventListener('click', ()=>{ setMode('landing'); generateAll(); });
+  document.getElementById('scrollTopBtn').addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
+  document.getElementById('scrollBottomBtn').addEventListener('click', ()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}));
+}
+makeFloatingBg();
+renderPresets();
+renderCategories();
+bindMainActions();
+bindCopyButtons();
+renderHistory();
+applyPreset(0);
+</script>
+</body>
+</html>
